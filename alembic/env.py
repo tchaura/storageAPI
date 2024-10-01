@@ -4,7 +4,9 @@ from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 from src.config import settings
-from src.database import metadata
+from sqlmodel import SQLModel
+from src.constants import DB_NAMING_CONVENTION
+from src.models import Product, Order, OrderItem
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -19,7 +21,9 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = metadata
+target_metadata = SQLModel.metadata
+
+target_metadata.naming_convention = DB_NAMING_CONVENTION
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
