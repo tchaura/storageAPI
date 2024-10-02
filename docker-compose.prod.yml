@@ -1,8 +1,8 @@
-version: '3.7'
-
 services:
   app:
     container_name: app
+    links:
+      - app_db
     image: app
     env_file:
       - .env
@@ -13,4 +13,27 @@ services:
       dockerfile: Dockerfile.prod
     command:
       - entrypoints/gunicorn.sh
+    networks:
+      - app-network
+  app_db:
+    container_name: app_db
+    restart: always
+    image: library/postgres:16.3
+    environment:
+      - POSTGRES_USER=app
+      - POSTGRES_PASSWORD=app
+      - POSTGRES_DB=app
+    volumes:
+      - app_db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
 
+volumes:
+  app_db_data:
+    driver: "local"
+
+networks:
+  app-network:
+    driver: bridge
