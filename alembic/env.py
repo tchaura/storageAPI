@@ -1,12 +1,11 @@
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
+from sqlmodel import SQLModel
 
 from alembic import context
 from src.config import settings
-from sqlmodel import SQLModel
 from src.constants import DB_NAMING_CONVENTION
-from src.models import Product, Order, OrderItem
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -91,4 +91,3 @@ class Order(OrderBase, table=True):
 
 class OrderStatusUpdate(SQLModel):
     status: OrderStatus
-

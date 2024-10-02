@@ -1,4 +1,5 @@
 from enum import Enum
+from pathlib import Path
 
 DB_NAMING_CONVENTION = {
     "ix": "%(column_0_label)s_idx",
@@ -7,6 +8,8 @@ DB_NAMING_CONVENTION = {
     "fk": "%(table_name)s_%(column_0_name)s_fkey",
     "pk": "%(table_name)s_pkey",
 }
+
+ROOT_DIR = Path(__file__).parents[1]
 
 
 class Environment(str, Enum):

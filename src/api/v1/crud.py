@@ -3,8 +3,7 @@ from typing import List, Sequence, Type
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import SQLModel, select
 
-from src.exceptions import BadRequest
-from src.models import (
+from src.api.v1.models import (
     Order,
     OrderItem,
     OrderItemCreate,
@@ -12,6 +11,7 @@ from src.models import (
     ProductCreate,
     ProductUpdate,
 )
+from src.exceptions import BadRequest
 
 
 async def get_items(
@@ -22,8 +22,8 @@ async def get_items(
 
 
 # Product CRUD functions
-async def create_product(db: AsyncSession, data: ProductCreate):
-    product = Product(**data.dict())
+async def create_product(db: AsyncSession, data: ProductCreate) -> Product:
+    product = Product(**data.model_dump())
     db.add(product)
     await db.commit()
     await db.refresh(product)
@@ -43,16 +43,16 @@ async def get_product(db: AsyncSession, product_id: int) -> Type[Product] | None
 
 async def update_product(
     db: AsyncSession, product_id: int, product_data: ProductUpdate
-):
+) -> Type[Product] | None:
     db_product = await get_product(db, product_id)
-    for key, value in product_data.dict(exclude_unset=True).items():
+    for key, value in product_data.model_dump(exclude_unset=True).items():
         setattr(db_product, key, value)
     await db.commit()
     await db.refresh(db_product)
     return db_product
 
 
-async def delete_product(db: AsyncSession, product_id: int):
+async def delete_product(db: AsyncSession, product_id: int) -> Type[Product] | None:
     product = await get_product(db, product_id)
     await db.delete(product)
     await db.commit()
@@ -60,7 +60,7 @@ async def delete_product(db: AsyncSession, product_id: int):
 
 
 # Order CRUD functions
-async def create_order(db: AsyncSession, items: List[OrderItemCreate]):
+async def create_order(db: AsyncSession, items: List[OrderItemCreate]) -> Order:
     order = Order()
     db.add(order)
     await db.commit()
@@ -97,7 +97,9 @@ async def get_order(db: AsyncSession, order_id: int) -> Type[Order] | None:
     return order
 
 
-async def update_order_status(db: AsyncSession, order_id: int, status: str):
+async def update_order_status(
+    db: AsyncSession, order_id: int, status: str
+) -> Type[Order] | None:
     order = await get_order(db, order_id)
     order.status = status
     await db.commit()

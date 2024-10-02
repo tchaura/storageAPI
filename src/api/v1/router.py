@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.crud import (
+from src.api.v1.crud import (
     create_order,
     create_product,
     delete_product,
@@ -14,9 +14,7 @@ from src.crud import (
     update_order_status,
     update_product,
 )
-from src.database import get_async_session
-from src.exceptions import BadRequest, NotFound
-from src.models import (
+from src.api.v1.models import (
     OrderCreate,
     OrderRead,
     OrderStatusUpdate,
@@ -24,6 +22,8 @@ from src.models import (
     ProductRead,
     ProductUpdate,
 )
+from src.database import get_async_session
+from src.exceptions import BadRequest, NotFound
 
 router = APIRouter()
 
@@ -72,7 +72,7 @@ async def update_product_endpoint(
 @router.delete("/products/{product_id}", response_model=ProductRead)
 async def delete_product_endpoint(
     product_id: int, db: AsyncSession = Depends(get_async_session)
-) -> ProductRead:
+):
     product = await get_product(db, product_id)
     if not product:
         raise NotFound()
@@ -80,7 +80,7 @@ async def delete_product_endpoint(
 
 
 # Order Endpoints
-@router.post("/orders", response_model=OrderCreate, status_code=status.HTTP_201_CREATED)
+@router.post("/orders", response_model=OrderRead, status_code=status.HTTP_201_CREATED)
 async def create_order_endpoint(
     order: OrderCreate, db: AsyncSession = Depends(get_async_session)
 ):

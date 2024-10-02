@@ -17,7 +17,8 @@ ruff *args:
   poetry run ruff check {{args}} src
 
 lint:
-  poetry run ruff format src
+  poetry run ruff format src tests
+  poetry run ruff format tests
   just ruff --fix
 
 # docker
